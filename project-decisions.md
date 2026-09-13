@@ -18,7 +18,7 @@ them. Newest entries first.
 ### Static prerender: output lives in `dist/client/`
 
 - **What:** `vite.config.ts` configures `tanstackStart({ prerender: { enabled,
-  autoSubfolderIndex, crawlLinks, failOnError }, pages: [...] })`. Dynamic routes
+autoSubfolderIndex, crawlLinks, failOnError }, pages: [...] })`. Dynamic routes
   (`/$slug`) are listed explicitly in `pages` so they prerender.
 - **Why:** `autoSubfolderIndex` emits directory-style URLs
   (`/example/index.html`) required for clean GitHub Pages paths.
@@ -118,7 +118,7 @@ them. Newest entries first.
   emits it as a `<link>` in the route head:
   `links: [{ href: appCss, rel: "stylesheet" }]`.
 - **`@/`** — path alias to `src/` (`tsconfig.json` → `paths: { "@/*":
-  ["./src/*"] }`); resolves to `src/styles/app.css`.
+["./src/*"] }`); resolves to `src/styles/app.css`.
 - **`?url`** — Vite returns the file's resolved, hashed URL string
   (e.g. `/assets/app-CXxCekb2.css`) instead of the CSS contents. Without it,
   Vite would bundle and auto-inject the CSS.
@@ -126,17 +126,46 @@ them. Newest entries first.
   styles load with **zero JavaScript** (matches the no-JS baseline goal). The
   content hash provides cache-busting.
 
+### No route loader — content accessed via static import
+
+- **What:** `_content/$slug.tsx` has no `loader`. Both the component and `head`
+  call `findPage(slug)` directly from the static `contentIndex` import.
+  The component throws `notFound()` for invalid slugs.
+- **Why:** A loader that returns the full `page` object fails — Seroval
+  (TanStack Start's SSR serializer) cannot serialize MDX component references
+  in `page.sections` (`SerovalUnsupportedTypeError`). Returning only
+  `{ meta }` from the loader worked but added indirection for no real gain,
+  since `head` can access `params` directly.
+- **Consequence:** `.find()` runs twice per page (component + head).
+  Negligible on a single-digit array.
+
+### Per-route document titles via `head`
+
+- **What:** Content routes set `<title>` from `params.slug` via `.find()`
+  in the route's `head` function, falling back to `cardLabel`. The root route
+  provides the default title `"Portfolio"`.
+- **Why:** Each page gets a distinct browser tab title. Format is bare page name
+  (e.g. `"Contact me"`), no site suffix.
+
+### Not-found handling: in-app component + static 404.html
+
+- **What:** Root route has a `notFoundComponent` (minimal "Page not found" +
+  home link). `public/404.html` is a standalone static page for GitHub Pages.
+- **Why:** Two different 404 paths — in-app `notFound()` triggers the React
+  component (client-side nav or prerender); GitHub Pages serves `404.html` for
+  paths that have no prerendered file.
+
 ---
 
 ## Scripts
 
-| Script             | Purpose                                         |
-| ------------------ | ----------------------------------------------- |
-| `dev`              | Generate content index + Vite dev server        |
+| Script             | Purpose                                           |
+| ------------------ | ------------------------------------------------- |
+| `dev`              | Generate content index + Vite dev server          |
 | `build`            | Generate content index + static build + prerender |
-| `preview`          | Serve built output                              |
-| `lint:ts`          | `tsc --noEmit` (type checking)                  |
-| `lint:js`          | `eslint .`                                      |
-| `lint`             | `lint:js` + `lint:ts`                           |
-| `content:generate` | Scan content folders, validate, emit typed index |
-| `content:validate` | Validate content without generating              |
+| `preview`          | Serve built output                                |
+| `lint:ts`          | `tsc --noEmit` (type checking)                    |
+| `lint:js`          | `eslint .`                                        |
+| `lint`             | `lint:js` + `lint:ts`                             |
+| `content:generate` | Scan content folders, validate, emit typed index  |
+| `content:validate` | Validate content without generating               |

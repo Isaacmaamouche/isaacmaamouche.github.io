@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 
 import { ContentRenderer } from "@/components/ContentRenderer";
+import { Title } from "@/components/Title";
 import { contentIndex } from "@/content/generated-content";
 
 const ContentPage = () => {
@@ -13,9 +14,7 @@ const ContentPage = () => {
 
   return (
     <article>
-      <h1 className="text-2xl font-semibold">
-        {page.meta.title || page.meta.cardLabel}
-      </h1>
+      <Title>{page.meta.title || page.meta.cardLabel}</Title>
       <div className="mt-6">
         <ContentRenderer sections={page.sections} />
       </div>
@@ -25,4 +24,10 @@ const ContentPage = () => {
 
 export const Route = createFileRoute("/_content/$slug")({
   component: ContentPage,
+  head: ({ params }) => {
+    const page = contentIndex.pages.find((p) => p.meta.slug === params.slug);
+    return {
+      meta: [{ title: page?.meta.title || page?.meta.cardLabel || "" }],
+    };
+  },
 });

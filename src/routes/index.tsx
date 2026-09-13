@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
+import { Title } from "@/components/Title";
 import { contentIndex } from "@/content/generated-content";
 
 const Home = () => {
   return (
     <>
-      <h1 className="text-2xl font-semibold">Portfolio</h1>
+      <Title>Portfolio</Title>
       <nav className="mt-4 flex flex-col gap-2">
         {contentIndex.pages.map((page) => (
           <Link

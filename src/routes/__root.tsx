@@ -3,10 +3,12 @@ import type { ReactNode } from "react";
 import {
   createRootRoute,
   HeadContent,
+  Link,
   Outlet,
   Scripts,
 } from "@tanstack/react-router";
 
+import { Title } from "@/components/Title";
 import appCss from "@/styles/app.css?url";
 
 const RootDocument = ({ children }: Readonly<{ children: ReactNode }>) => {
@@ -33,6 +35,17 @@ const RootComponent = () => {
   );
 };
 
+const NotFound = () => {
+  return (
+    <div className="py-12 text-center">
+      <Title>Page not found</Title>
+      <Link className="mt-4 underline" to="/">
+        Back to home
+      </Link>
+    </div>
+  );
+};
+
 export const Route = createRootRoute({
   component: RootComponent,
   head: () => ({
@@ -43,4 +56,5 @@ export const Route = createRootRoute({
       { title: "Portfolio" },
     ],
   }),
+  notFoundComponent: NotFound,
 });
