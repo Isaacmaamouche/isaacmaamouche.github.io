@@ -1,4 +1,5 @@
 @import 'tailwindcss' source('../');
+@import './view-transitions.css';
 @source '../../content';
 
 @layer base {

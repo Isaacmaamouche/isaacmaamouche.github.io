@@ -1,5 +1,6 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 
+import { BackButton } from "@/components/BackButton";
 import { ContentRenderer } from "@/components/ContentRenderer";
 import { contentIndex } from "@/content/generated-content";
 
@@ -13,9 +14,7 @@ const ContentPage = () => {
 
   return (
     <main className="mx-auto max-w-3xl p-8">
-      <Link className="text-sm underline" data-back-button to="/">
-        Back
-      </Link>
+      <BackButton />
       <h1 className="mt-4 text-2xl font-semibold">
         {page.meta.title || page.meta.cardLabel}
       </h1>
