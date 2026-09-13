@@ -1,33 +1,15 @@
-import type { ReactNode } from 'react'
+import type { ReactNode } from "react";
+
 import {
+  createRootRoute,
   HeadContent,
   Outlet,
   Scripts,
-  createRootRoute,
-} from '@tanstack/react-router'
-import appCss from '~/styles/app.css?url'
+} from "@tanstack/react-router";
 
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Portfolio' },
-    ],
-    links: [{ rel: 'stylesheet', href: appCss }],
-  }),
-  component: RootComponent,
-})
+import appCss from "~/styles/app.css?url";
 
-function RootComponent() {
-  return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
-  )
-}
-
-function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
+const RootDocument = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (
     <html lang="en">
       <head>
@@ -38,5 +20,25 @@ function RootDocument({ children }: Readonly<{ children: ReactNode }>) {
         <Scripts />
       </body>
     </html>
-  )
-}
+  );
+};
+
+const RootComponent = () => {
+  return (
+    <RootDocument>
+      <Outlet />
+    </RootDocument>
+  );
+};
+
+export const Route = createRootRoute({
+  component: RootComponent,
+  head: () => ({
+    links: [{ href: appCss, rel: "stylesheet" }],
+    meta: [
+      { charSet: "utf-8" },
+      { content: "width=device-width, initial-scale=1", name: "viewport" },
+      { title: "Portfolio" },
+    ],
+  }),
+});
