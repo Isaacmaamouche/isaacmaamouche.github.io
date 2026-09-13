@@ -1,0 +1,10 @@
+node_modules
+dist
+.claude
+.output
+.nitro
+.tanstack
+src/routeTree.gen.ts
+src/content/generated-content.ts
+.DS_Store
+*.log
