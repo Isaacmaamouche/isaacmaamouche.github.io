@@ -1,14 +1,26 @@
-import { defineConfig } from 'vite'
-import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import tailwindcss from "@tailwindcss/vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 
 export default defineConfig({
-  server: {
-    port: 3000,
-  },
+  plugins: [
+    tailwindcss(),
+    tanstackStart({
+      pages: [{ path: "/" }, { path: "/example" }],
+      prerender: {
+        autoSubfolderIndex: true,
+        crawlLinks: true,
+        enabled: true,
+        failOnError: true,
+      },
+    }),
+    viteReact(),
+  ],
   resolve: {
     tsconfigPaths: true,
   },
-  plugins: [tailwindcss(), tanstackStart(), viteReact()],
-})
+  server: {
+    port: 3000,
+  },
+});
