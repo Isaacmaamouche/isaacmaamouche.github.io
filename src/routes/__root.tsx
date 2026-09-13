@@ -7,7 +7,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
-import appCss from "~/styles/app.css?url";
+import appCss from "@/styles/app.css?url";
 
 const RootDocument = ({ children }: Readonly<{ children: ReactNode }>) => {
   return (

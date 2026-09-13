@@ -66,12 +66,12 @@ them. Newest entries first.
   keys/imports/props) now enforced via `eslint-plugin-prettier`; source was
   auto-formatted with `eslint . --fix`.
 
-### CSS imported as a URL: `import appCss from "~/styles/app.css?url"`
+### CSS imported as a URL: `import appCss from "@/styles/app.css?url"`
 
 - **What:** `__root.tsx` imports the stylesheet with Vite's `?url` suffix and
   emits it as a `<link>` in the route head:
   `links: [{ href: appCss, rel: "stylesheet" }]`.
-- **`~/`** — path alias to `src/` (`tsconfig.json` → `paths: { "~/*":
+- **`@/`** — path alias to `src/` (`tsconfig.json` → `paths: { "@/*":
   ["./src/*"] }`); resolves to `src/styles/app.css`.
 - **`?url`** — Vite returns the file's resolved, hashed URL string
   (e.g. `/assets/app-CXxCekb2.css`) instead of the CSS contents. Without it,
