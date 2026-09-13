@@ -2,11 +2,14 @@
   "name": "tanstack-portfolio",
   "version": "1.0.0",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
+    "content:generate": "tsx scripts/generate-content-index.ts",
+    "content:validate": "tsx scripts/validate-content.ts",
+    "dev": "npm run content:generate && vite dev",
+    "build": "npm run content:generate && vite build",
     "preview": "vite preview",
-    "check": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint:ts": "tsc --noEmit",
+    "lint:js": "eslint .",
+    "lint": "npm run lint:js && npm run lint:ts"
   },
   "keywords": [],
   "author": "",
@@ -38,8 +41,10 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.12.0",
+    "gray-matter": "^4.0.3",
     "prettier": "^3.9.6",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vite": "^8.3.0"
   },

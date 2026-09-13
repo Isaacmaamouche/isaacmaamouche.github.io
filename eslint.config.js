@@ -86,8 +86,10 @@ export default [
     // no-unused-vars can't see type-position usage under the babel parser, so
     // type-only imports read as unused. tsc (noUnusedLocals/noUnusedParameters,
     // type-aware) owns unused detection for TS; keep the ESLint rule for .js.
+    // Same applies to no-undef: babel parser can't resolve TS type identifiers.
     files: ["**/*.{ts,tsx}"],
     rules: {
+      "no-undef": "off",
       "no-unused-vars": "off",
     },
   },
