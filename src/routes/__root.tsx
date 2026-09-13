@@ -26,7 +26,9 @@ const RootDocument = ({ children }: Readonly<{ children: ReactNode }>) => {
 const RootComponent = () => {
   return (
     <RootDocument>
-      <Outlet />
+      <main className="mx-auto max-w-3xl p-8">
+        <Outlet />
+      </main>
     </RootDocument>
   );
 };
