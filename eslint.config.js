@@ -15,6 +15,7 @@ export default [
     ".tanstack",
     "public",
     "src/routeTree.gen.ts",
+    "src/content/generated-content.ts",
   ]),
   eslint.configs.recommended,
   eslintPluginPrettierRecommended,

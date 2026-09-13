@@ -66,6 +66,52 @@ them. Newest entries first.
   keys/imports/props) now enforced via `eslint-plugin-prettier`; source was
   auto-formatted with `eslint . --fix`.
 
+### `no-undef` disabled for TypeScript files
+
+- **What:** `no-undef` is turned off for `.ts`/`.tsx` in the ESLint config,
+  alongside `no-unused-vars`.
+- **Why:** Same root cause — `@babel/eslint-parser` lacks type information, so
+  TypeScript type identifiers (`type Foo`, `interface Bar`, generic parameters)
+  are flagged as undefined. `tsc` already catches actual undefined references.
+- **Trade-off:** None. Both `no-undef` and `no-unused-vars` are fully covered
+  by `tsc` for TypeScript files.
+
+### MDX compilation via `@mdx-js/rollup`
+
+- **What:** MDX files are compiled to React components at build time using
+  `@mdx-js/rollup` in `vite.config.ts`, with `remark-frontmatter` to strip
+  YAML frontmatter during compilation.
+- **Why:** Vite-native MDX support. `remark-frontmatter` prevents the MDX
+  compiler from choking on `---` blocks — frontmatter is already parsed
+  separately by `gray-matter` at content-index generation time.
+- **Alternative considered:** TanStack Start Content Collections. Rejected
+  because the project requires colocated React components, local asset imports,
+  and explicit hydration — features that need direct MDX compilation control.
+
+### Content index is generated code with MDX imports
+
+- **What:** `scripts/generate-content-index.ts` scans `content/` folders,
+  validates metadata, and emits `src/content/generated-content.ts` — a TypeScript
+  module with `import` statements for each MDX section file. Vite then bundles
+  these imports like any other module.
+- **Why:** Avoids filesystem reads at request time. MDX files become part of the
+  Vite module graph, enabling tree-shaking, HMR, and correct asset resolution
+  for colocated imports.
+- **Consequence:** `generated-content.ts` is gitignored (like `routeTree.gen.ts`).
+  Both `dev` and `build` scripts run `content:generate` first.
+  The file is excluded from ESLint (auto-generated, formatting not meaningful).
+
+### Build-time and runtime content types are separate
+
+- **What:** `content-schema.ts` exports two type families:
+  - Build-time (`ContentSection`, `ContentPage`, `ContentIndex`) — use file
+    paths, consumed by the generate script.
+  - Runtime (`RuntimeContentSection`, `RuntimeContentPage`,
+    `RuntimeContentIndex`) — use `ComponentType`, consumed by route components.
+- **Why:** The generate script runs in Node (no React), while route components
+  need actual component references. Keeping them separate avoids `any` casts
+  and keeps both sides type-safe.
+
 ### CSS imported as a URL: `import appCss from "@/styles/app.css?url"`
 
 - **What:** `__root.tsx` imports the stylesheet with Vite's `?url` suffix and
@@ -84,10 +130,13 @@ them. Newest entries first.
 
 ## Scripts
 
-| Script  | Purpose                                  |
-| ------- | ---------------------------------------- |
-| `dev`   | Vite dev server                          |
-| `build` | Static build + prerender                 |
-| `preview` | Serve built output                     |
-| `check` | `tsc --noEmit` (type checking)           |
-| `lint`  | `eslint .`                               |
+| Script             | Purpose                                         |
+| ------------------ | ----------------------------------------------- |
+| `dev`              | Generate content index + Vite dev server        |
+| `build`            | Generate content index + static build + prerender |
+| `preview`          | Serve built output                              |
+| `lint:ts`          | `tsc --noEmit` (type checking)                  |
+| `lint:js`          | `eslint .`                                      |
+| `lint`             | `lint:js` + `lint:ts`                           |
+| `content:generate` | Scan content folders, validate, emit typed index |
+| `content:validate` | Validate content without generating              |
